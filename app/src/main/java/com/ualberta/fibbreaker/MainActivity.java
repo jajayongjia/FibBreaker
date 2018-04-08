@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bakerj.infinitecards.AnimationTransformer;
@@ -19,21 +21,36 @@ import com.bakerj.infinitecards.transformer.DefaultTransformerToBack;
 import com.bakerj.infinitecards.transformer.DefaultTransformerToFront;
 import com.bakerj.infinitecards.transformer.DefaultZIndexTransformerCommon;
 
+import static android.graphics.Color.BLUE;
+import static android.graphics.Color.CYAN;
+import static android.graphics.Color.DKGRAY;
+import static android.graphics.Color.GRAY;
+import static android.graphics.Color.GREEN;
+
 public class MainActivity extends AppCompatActivity {
-    private InfiniteCardView mCardView;
-    private BaseAdapter mAdapter1, mAdapter2;
+    private InfiniteCardView mFibView;
+    private BaseAdapter mFib1, mFib2;
     private int[] resId = {R.mipmap.pic1, R.mipmap.pic2, R.mipmap.pic3, R.mipmap
             .pic4, R.mipmap.pic5};
-    private boolean mIsAdapter1 = true;
+    private String[] fibNumbers = {"1","2","3","4","5"};
+    private int[] colors = {BLUE,CYAN,DKGRAY,GRAY,GREEN};
+//    int	LTGRAY
+//    int	MAGENTA
+//    int	RED
+//    int	TRANSPARENT
+//    int	WHITE
+//    int	YELLOW}
+    private boolean mIsFib1 = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mCardView = findViewById(R.id.view);
-        mAdapter1 = new MyAdapter(resId);
-        mAdapter2 = new MyAdapter(resId);
-        mCardView.setAdapter(mAdapter1);
-        mCardView.setCardAnimationListener(new InfiniteCardView.CardAnimationListener() {
+        mFibView = findViewById(R.id.view);
+        mFib1 = new MyFib(resId,fibNumbers,colors);
+        mFib2 = new MyFib(resId,fibNumbers,colors);
+        mFibView.setAdapter(mFib1);
+        mFibView.setCardAnimationListener(new InfiniteCardView.CardAnimationListener() {
             @Override
             public void onAnimationStart() {
                 Toast.makeText(MainActivity.this, "Animation Start", Toast.LENGTH_SHORT).show();
@@ -50,59 +67,59 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.pre).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mIsAdapter1) {
+                if (mIsFib1) {
                     setStyle2();
-                    mCardView.bringCardToFront(mAdapter1.getCount() - 1);
+                    mFibView.bringCardToFront(mFib1.getCount() - 1);
                 } else {
                     setStyle1();
-                    mCardView.bringCardToFront(mAdapter2.getCount() - 1);
+                    mFibView.bringCardToFront(mFib2.getCount() - 1);
                 }
             }
         });
         findViewById(R.id.next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mIsAdapter1) {
+                if (mIsFib1) {
                     setStyle2();
                 } else {
                     setStyle3();
                 }
-                mCardView.bringCardToFront(1);
+                mFibView.bringCardToFront(1);
             }
         });
         findViewById(R.id.change).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mCardView.isAnimating()) {
+                if (mFibView.isAnimating()) {
                     return;
                 }
-                mIsAdapter1 = !mIsAdapter1;
-                if (mIsAdapter1) {
+                mIsFib1 = !mIsFib1;
+                if (mIsFib1) {
                     setStyle2();
-                    mCardView.setAdapter(mAdapter1);
+                    mFibView.setAdapter(mFib1);
                 } else {
                     setStyle1();
-                    mCardView.setAdapter(mAdapter2);
+                    mFibView.setAdapter(mFib2);
                 }
             }
         });
     }
 
     private void setStyle1() {
-        mCardView.setClickable(true);
-        mCardView.setAnimType(InfiniteCardView.ANIM_TYPE_FRONT);
-        mCardView.setAnimInterpolator(new LinearInterpolator());
-        mCardView.setTransformerToFront(new DefaultTransformerToFront());
-        mCardView.setTransformerToBack(new DefaultTransformerToBack());
-        mCardView.setZIndexTransformerToBack(new DefaultZIndexTransformerCommon());
+        mFibView.setClickable(true);
+        mFibView.setAnimType(InfiniteCardView.ANIM_TYPE_FRONT);
+        mFibView.setAnimInterpolator(new LinearInterpolator());
+        mFibView.setTransformerToFront(new DefaultTransformerToFront());
+        mFibView.setTransformerToBack(new DefaultTransformerToBack());
+        mFibView.setZIndexTransformerToBack(new DefaultZIndexTransformerCommon());
     }
 
     private void setStyle2() {
-        mCardView.setClickable(true);
-        mCardView.setAnimType(InfiniteCardView.ANIM_TYPE_SWITCH);
-        mCardView.setAnimInterpolator(new OvershootInterpolator(-18));
-        mCardView.setTransformerToFront(new DefaultTransformerToFront());
-        mCardView.setTransformerToBack(new AnimationTransformer() {
+        mFibView.setClickable(true);
+        mFibView.setAnimType(InfiniteCardView.ANIM_TYPE_SWITCH);
+        mFibView.setAnimInterpolator(new OvershootInterpolator(-18));
+        mFibView.setTransformerToFront(new DefaultTransformerToFront());
+        mFibView.setTransformerToBack(new AnimationTransformer() {
             @Override
             public void transformAnimation(View view, float fraction, int cardWidth, int cardHeight, int fromPosition, int toPosition) {
                 int positionCount = fromPosition - toPosition;
@@ -124,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                         fromPosition - 0.02f * fraction * positionCount));
             }
         });
-        mCardView.setZIndexTransformerToBack(new ZIndexTransformer() {
+        mFibView.setZIndexTransformerToBack(new ZIndexTransformer() {
             @Override
             public void transformAnimation(CardItem card, float fraction, int cardWidth, int cardHeight, int fromPosition, int toPosition) {
                 if (fraction < 0.4f) {
@@ -142,11 +159,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setStyle3() {
-        mCardView.setClickable(false);
-        mCardView.setAnimType(InfiniteCardView.ANIM_TYPE_FRONT_TO_LAST);
-        mCardView.setAnimInterpolator(new OvershootInterpolator(-8));
-        mCardView.setTransformerToFront(new DefaultCommonTransformer());
-        mCardView.setTransformerToBack(new AnimationTransformer() {
+        mFibView.setClickable(false);
+        mFibView.setAnimType(InfiniteCardView.ANIM_TYPE_FRONT_TO_LAST);
+        mFibView.setAnimInterpolator(new OvershootInterpolator(-8));
+        mFibView.setTransformerToFront(new DefaultCommonTransformer());
+        mFibView.setTransformerToBack(new AnimationTransformer() {
             @Override
             public void transformAnimation(View view, float fraction, int cardWidth, int cardHeight, int fromPosition, int toPosition) {
                 int positionCount = fromPosition - toPosition;
@@ -170,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                         fromPosition - 0.02f * fraction * positionCount));
             }
         });
-        mCardView.setZIndexTransformerToBack(new ZIndexTransformer() {
+        mFibView.setZIndexTransformerToBack(new ZIndexTransformer() {
             @Override
             public void transformAnimation(CardItem card, float fraction, int cardWidth, int cardHeight, int fromPosition, int toPosition) {
                 if (fraction < 0.5f) {
@@ -187,11 +204,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private static class MyAdapter extends BaseAdapter {
+    private static class MyFib extends BaseAdapter {
         private int[] resIds = {};
+        private String[] fibNumbers = {};
+        private int[] colors = {};
 
-        MyAdapter(int[] resIds) {
+        MyFib(int[] resIds, String[] fibNumbers,int[] colors) {
             this.resIds = resIds;
+            this.fibNumbers = fibNumbers;
+            this.colors = colors;
         }
 
         @Override
@@ -211,11 +232,16 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            TextView fibNumberView;
             if (convertView == null) {
                 convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout
                         .item_card, parent, false);
             }
-            convertView.setBackgroundResource(resIds[position]);
+
+            fibNumberView = ( TextView) convertView.findViewById(R.id.fibNumber);
+            fibNumberView.setText(fibNumbers[position]);
+            convertView.setBackgroundColor(colors[position]);
+//            convertView.setBackgroundResource(resIds[position]);
             return convertView;
         }
     }
