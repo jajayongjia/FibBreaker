@@ -1,5 +1,6 @@
 package com.ualberta.fibbreaker;
 
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,6 +21,13 @@ import com.bakerj.infinitecards.transformer.DefaultCommonTransformer;
 import com.bakerj.infinitecards.transformer.DefaultTransformerToBack;
 import com.bakerj.infinitecards.transformer.DefaultTransformerToFront;
 import com.bakerj.infinitecards.transformer.DefaultZIndexTransformerCommon;
+
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.ProtocolException;
+import java.net.URL;
 
 import static android.graphics.Color.BLUE;
 import static android.graphics.Color.CYAN;
@@ -243,6 +251,35 @@ public class FibActivity extends AppCompatActivity {
             convertView.setBackgroundColor(colors[position]);
 //            convertView.setBackgroundResource(resIds[position]);
             return convertView;
+        }
+    }
+
+    private class toPost extends AsyncTask<URL, Void, String> {
+        @Override
+        protected String doInBackground(URL... params) {
+            HttpURLConnection conn = null;
+            try {
+                URL url = new URL("http://127.0.0.1:8000/calculator");
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                String body = "4";
+                OutputStream output = new BufferedOutputStream(conn.getOutputStream());
+                output.write(body.getBytes());
+                output.flush();
+                conn.getResponseCode();
+
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                conn.disconnect();
+            }
+            return null;
         }
     }
 }
