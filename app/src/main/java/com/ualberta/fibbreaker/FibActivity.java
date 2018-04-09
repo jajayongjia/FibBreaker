@@ -23,11 +23,15 @@ import com.bakerj.infinitecards.transformer.DefaultTransformerToFront;
 import com.bakerj.infinitecards.transformer.DefaultZIndexTransformerCommon;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import static android.graphics.Color.BLUE;
 import static android.graphics.Color.CYAN;
@@ -42,13 +46,9 @@ public class FibActivity extends AppCompatActivity {
             .pic4, R.mipmap.pic5};
     private String[] fibNumbers = {"1","2","3","4","5"};
     private int[] colors = {BLUE,CYAN,DKGRAY,GRAY,GREEN};
-    //    int	LTGRAY
-//    int	MAGENTA
-//    int	RED
-//    int	TRANSPARENT
-//    int	WHITE
-//    int	YELLOW}
     private boolean mIsFib1 = true;
+    String url = "http://192.168.0.15:8000/calculator/";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +58,8 @@ public class FibActivity extends AppCompatActivity {
         mFib1 = new MyFib(resId,fibNumbers,colors);
         mFib2 = new MyFib(resId,fibNumbers,colors);
         mFibView.setAdapter(mFib1);
+        toGet text = new toGet();
+        text.execute();
 //        mFibView.setCardAnimationListener(new InfiniteCardView.CardAnimationListener() {
 //            @Override
 //            public void onAnimationStart() {
@@ -254,24 +256,26 @@ public class FibActivity extends AppCompatActivity {
         }
     }
 
-    private class toPost extends AsyncTask<URL, Void, String> {
+    private class toGet extends AsyncTask<URL, Void, String> {
         @Override
         protected String doInBackground(URL... params) {
             HttpURLConnection conn = null;
+            String response = "";
             try {
-                URL url = new URL("http://127.0.0.1:8000/calculator");
+                URL url = new URL("http://172.31.164.78:8000/calculator/?number=1");
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
-                conn.setRequestMethod("POST");
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                String body = "4";
-                OutputStream output = new BufferedOutputStream(conn.getOutputStream());
-                output.write(body.getBytes());
-                output.flush();
-                conn.getResponseCode();
-
+//                conn.setRequestProperty("Content-Type", "application/json");
+                int responseCode = conn.getResponseCode();
+                if(responseCode == HttpsURLConnection.HTTP_OK){
+                    String line;
+                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    while ((line = br.readLine())!=null)
+                        response+=line;
+                }
+                else
+                    response = "";
             } catch (ProtocolException e) {
                 e.printStackTrace();
             } catch (IOException e) {

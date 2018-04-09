@@ -10,11 +10,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
     private EditText number1;
@@ -45,8 +49,6 @@ public class MainActivity extends AppCompatActivity {
                     Intent i = new Intent(MainActivity.this, FibActivity.class);
 
                     i.putExtra("INPUT1", input1);
-                    toPost text = new toPost();
-                    text.execute();
 
                     i.putExtra("INPUT2", input2);
                     startActivity(i);
@@ -59,32 +61,5 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
-    private class toPost extends AsyncTask<URL, Void, String> {
-        @Override
-        protected String doInBackground(URL... params) {
-            HttpURLConnection conn = null;
-            try {
-                URL url = new URL("http://localhost:8000/calculator/");
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(10000);
-                conn.setConnectTimeout(15000);
-                conn.setRequestMethod("POST");
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                String body = "4";
-                OutputStream output = new BufferedOutputStream(conn.getOutputStream());
-                output.write(body.getBytes());
-                output.flush();
-                conn.getResponseCode();
 
-            } catch (ProtocolException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                conn.disconnect();
-            }
-            return null;
-        }
-    }
 }
