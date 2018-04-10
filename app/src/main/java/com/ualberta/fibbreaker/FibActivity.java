@@ -31,54 +31,30 @@ import java.net.ProtocolException;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
-
-import static android.graphics.Color.BLUE;
-import static android.graphics.Color.CYAN;
-import static android.graphics.Color.DKGRAY;
-import static android.graphics.Color.GRAY;
-import static android.graphics.Color.GREEN;
 import static android.graphics.Color.YELLOW;
 
 public class FibActivity extends AppCompatActivity {
-    private InfiniteCardView mFibView;
-    private BaseAdapter mFib1, mFib2;
-    private int[] resId = {R.mipmap.pic1, R.mipmap.pic2, R.mipmap.pic3, R.mipmap
+    public InfiniteCardView mFibView;
+    public BaseAdapter mFib1, mFib2;
+    public int[] resId = {R.mipmap.pic1, R.mipmap.pic2, R.mipmap.pic3, R.mipmap
             .pic4, R.mipmap.pic5};
-    public String[] fibNumbers = {"0", "0", "0", "0", "0"};
-    private int[] colors = {BLUE, CYAN, YELLOW, GRAY, GREEN};
-    private boolean mIsFib1 = true;
-    String url = "http://192.168.0.15:8000/calculator/";
-    public int currentIndex;
-    public String response,number1,number2;
+    public String[] fibNumbers = {"0"};
+    public int[] colors = {YELLOW};
+    public boolean mIsFib1 = true;
+    public String number1,number2,response;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fib);
         mFibView = findViewById(R.id.view);
+        number1 = getIntent().getExtras().getString("INPUT1");
+        number2 = getIntent().getExtras().getString("INPUT2");
         mFib1 = new MyFib(resId, fibNumbers, colors);
         mFib2 = new MyFib(resId, fibNumbers, colors);
         mFibView.setAdapter(mFib1);
-        number1 = getIntent().getExtras().getString("INPUT1");
-        number2 = getIntent().getExtras().getString("INPUT2");
-
+        fibNumbers[0] = String.valueOf(Integer.valueOf(number1)+Integer.valueOf(number2));
         toGet text = new toGet();
         text.execute();
-        fibNumbers[0] = number1;
-        fibNumbers[1] = number2;
-        fibNumbers[2] = "5";
-        currentIndex = 3;
-
-//        mFibView.setCardAnimationListener(new InfiniteCardView.CardAnimationListener() {
-//            @Override
-//            public void onAnimationStart() {
-//                Toast.makeText(MainActivity.this, "Animation Start", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onAnimationEnd() {
-//                Toast.makeText(MainActivity.this, "Animation End", Toast.LENGTH_SHORT).show();
-//            }
-//        });
         initButton();
     }
 
@@ -98,15 +74,9 @@ public class FibActivity extends AppCompatActivity {
         findViewById(R.id.next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mIsFib1) {
-                    setStyle3();
-                } else {
-                    setStyle2();
-                }
-                mFibView.bringCardToFront(1);
-                findNext();
-
-
+                    mFibView.setAdapter(mFib1);
+                    toGet text2 = new toGet();
+                    text2.execute();
             }
         });
         findViewById(R.id.change).setOnClickListener(new View.OnClickListener() {
@@ -239,17 +209,17 @@ public class FibActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return resIds.length;
+            return fibNumbers.length;
         }
 
         @Override
         public Integer getItem(int position) {
-            return resIds[position];
+            return colors[0];
         }
 
         @Override
         public long getItemId(int position) {
-            return position;
+            return 0;
         }
 
         @Override
@@ -261,8 +231,8 @@ public class FibActivity extends AppCompatActivity {
             }
 
             fibNumberView = (TextView) convertView.findViewById(R.id.fibNumber);
-            fibNumberView.setText(fibNumbers[position]);
-            convertView.setBackgroundColor(colors[position]);
+            fibNumberView.setText(fibNumbers[0]);
+            convertView.setBackgroundColor(colors[0]);
 //            convertView.setBackgroundResource(resIds[position]);
             return convertView;
         }
@@ -279,7 +249,6 @@ public class FibActivity extends AppCompatActivity {
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
-//                conn.setRequestProperty("Content-Type", "application/json");
                 int responseCode = conn.getResponseCode();
                 if (responseCode == HttpsURLConnection.HTTP_OK) {
                     String line;
@@ -295,28 +264,17 @@ public class FibActivity extends AppCompatActivity {
             } finally {
                 conn.disconnect();
             }
-            return null;
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            number1 = number2;
+            number2 = response;
+            fibNumbers[0] = number2;
         }
     }
 
-
-    private void findNext(){
-        number1 = number2;
-        number2 = response;
-        toGet text = new toGet();
-        text.execute();
-        if (currentIndex==5){
-            fibNumbers[0] = "test";
-            currentIndex = 1;
-        }
-        else{
-            fibNumbers[currentIndex++] = "backEnd";
-        }
-        mFibView.setAdapter(mFib1);
-//        mFib1 = new MyFib(resId, fibNumbers, colors);
-//        mFib2 = new MyFib(resId, fibNumbers, colors);
-
-    }
 
 
 }
