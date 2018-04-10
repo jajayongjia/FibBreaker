@@ -12,5 +12,6 @@ class CalculatorView(viewsets.ModelViewSet):
     queryset = Calculator.objects.all() 
     serializer_class = CalculatorSerializer
 
-    def dispatch(self, request, *args, **kwargs):
-        return HttpResponse('hello world!')    
+    #def get(self, request):
+        #return Response(serializer_class.data)
+    

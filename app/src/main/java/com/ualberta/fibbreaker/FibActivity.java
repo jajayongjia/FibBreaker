@@ -3,6 +3,7 @@ package com.ualberta.fibbreaker;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+import com.google.gson.Gson;
 
 import com.bakerj.infinitecards.AnimationTransformer;
 import com.bakerj.infinitecards.CardItem;
@@ -22,14 +23,23 @@ import com.bakerj.infinitecards.transformer.DefaultTransformerToBack;
 import com.bakerj.infinitecards.transformer.DefaultTransformerToFront;
 import com.bakerj.infinitecards.transformer.DefaultZIndexTransformerCommon;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -44,8 +54,8 @@ public class FibActivity extends AppCompatActivity {
     private BaseAdapter mFib1, mFib2;
     private int[] resId = {R.mipmap.pic1, R.mipmap.pic2, R.mipmap.pic3, R.mipmap
             .pic4, R.mipmap.pic5};
-    private String[] fibNumbers = {"1","2","3","4","5"};
-    private int[] colors = {BLUE,CYAN,DKGRAY,GRAY,GREEN};
+    private String[] fibNumbers = {"1", "2", "3", "4", "5"};
+    private int[] colors = {BLUE, CYAN, DKGRAY, GRAY, GREEN};
     private boolean mIsFib1 = true;
     String url = "http://192.168.0.15:8000/calculator/";
 
@@ -55,10 +65,11 @@ public class FibActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fib);
         mFibView = findViewById(R.id.view);
-        mFib1 = new MyFib(resId,fibNumbers,colors);
-        mFib2 = new MyFib(resId,fibNumbers,colors);
+        mFib1 = new MyFib(resId, fibNumbers, colors);
+        mFib2 = new MyFib(resId, fibNumbers, colors);
         mFibView.setAdapter(mFib1);
-        toGet text = new toGet();
+
+        toPut text = new toPut();
         text.execute();
 //        mFibView.setCardAnimationListener(new InfiniteCardView.CardAnimationListener() {
 //            @Override
@@ -73,6 +84,7 @@ public class FibActivity extends AppCompatActivity {
 //        });
         initButton();
     }
+
     private void initButton() {
         findViewById(R.id.pre).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -219,7 +231,7 @@ public class FibActivity extends AppCompatActivity {
         private String[] fibNumbers = {};
         private int[] colors = {};
 
-        MyFib(int[] resIds, String[] fibNumbers,int[] colors) {
+        MyFib(int[] resIds, String[] fibNumbers, int[] colors) {
             this.resIds = resIds;
             this.fibNumbers = fibNumbers;
             this.colors = colors;
@@ -248,7 +260,7 @@ public class FibActivity extends AppCompatActivity {
                         .item_card, parent, false);
             }
 
-            fibNumberView = ( TextView) convertView.findViewById(R.id.fibNumber);
+            fibNumberView = (TextView) convertView.findViewById(R.id.fibNumber);
             fibNumberView.setText(fibNumbers[position]);
             convertView.setBackgroundColor(colors[position]);
 //            convertView.setBackgroundResource(resIds[position]);
@@ -262,19 +274,18 @@ public class FibActivity extends AppCompatActivity {
             HttpURLConnection conn = null;
             String response = "";
             try {
-                URL url = new URL("http://172.31.164.78:8000/calculator/?number=1");
+                URL url = new URL("http://192.168.0.15:8000/calculator/");
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
 //                conn.setRequestProperty("Content-Type", "application/json");
                 int responseCode = conn.getResponseCode();
-                if(responseCode == HttpsURLConnection.HTTP_OK){
+                if (responseCode == HttpsURLConnection.HTTP_OK) {
                     String line;
                     BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                    while ((line = br.readLine())!=null)
-                        response+=line;
-                }
-                else
+                    while ((line = br.readLine()) != null)
+                        response += line;
+                } else
                     response = "";
             } catch (ProtocolException e) {
                 e.printStackTrace();
@@ -286,4 +297,47 @@ public class FibActivity extends AppCompatActivity {
             return null;
         }
     }
+
+
+    private class toPut extends AsyncTask<URL, Void, String>{
+
+
+        @Override
+        protected String doInBackground (URL...params){
+            HttpURLConnection conn = null;
+//            InputStreamReader input = null;
+        try {
+            URL url = new URL("http://192.168.0.15:8000/calculator/");
+            String param="number=" + URLEncoder.encode("100","UTF-8");
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setFixedLengthStreamingMode(param.getBytes().length);
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            PrintWriter out = new PrintWriter(conn.getOutputStream());
+            out.print(param);
+            out.close();
+            int responseCode = conn.getResponseCode();
+            System.out.println("Response Code : " + responseCode);
+
+            String response= "";
+
+            Scanner inStream = new Scanner(conn.getInputStream());
+
+            while(inStream.hasNextLine())
+                response+=(inStream.nextLine());
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            conn.disconnect();
+        }
+            return null;
+    }
+    }
+
+
 }
+
+
