@@ -3,16 +3,13 @@ package com.ualberta.fibbreaker;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.TextView;
-import com.google.gson.Gson;
 
 import com.bakerj.infinitecards.AnimationTransformer;
 import com.bakerj.infinitecards.CardItem;
@@ -23,23 +20,15 @@ import com.bakerj.infinitecards.transformer.DefaultTransformerToBack;
 import com.bakerj.infinitecards.transformer.DefaultTransformerToFront;
 import com.bakerj.infinitecards.transformer.DefaultZIndexTransformerCommon;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
+
 import java.io.IOException;
-import java.io.InputStream;
+
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -48,18 +37,19 @@ import static android.graphics.Color.CYAN;
 import static android.graphics.Color.DKGRAY;
 import static android.graphics.Color.GRAY;
 import static android.graphics.Color.GREEN;
+import static android.graphics.Color.YELLOW;
 
 public class FibActivity extends AppCompatActivity {
     private InfiniteCardView mFibView;
     private BaseAdapter mFib1, mFib2;
     private int[] resId = {R.mipmap.pic1, R.mipmap.pic2, R.mipmap.pic3, R.mipmap
             .pic4, R.mipmap.pic5};
-    private String[] fibNumbers = {"1", "2", "3", "4", "5"};
-    private int[] colors = {BLUE, CYAN, DKGRAY, GRAY, GREEN};
+    public String[] fibNumbers = {"0", "0", "0", "0", "0"};
+    private int[] colors = {BLUE, CYAN, YELLOW, GRAY, GREEN};
     private boolean mIsFib1 = true;
     String url = "http://192.168.0.15:8000/calculator/";
-
-
+    public int currentIndex;
+    public String response,number1,number2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,9 +58,16 @@ public class FibActivity extends AppCompatActivity {
         mFib1 = new MyFib(resId, fibNumbers, colors);
         mFib2 = new MyFib(resId, fibNumbers, colors);
         mFibView.setAdapter(mFib1);
+        number1 = getIntent().getExtras().getString("INPUT1");
+        number2 = getIntent().getExtras().getString("INPUT2");
 
-        toPut text = new toPut();
+        toGet text = new toGet();
         text.execute();
+        fibNumbers[0] = number1;
+        fibNumbers[1] = number2;
+        fibNumbers[2] = "5";
+        currentIndex = 3;
+
 //        mFibView.setCardAnimationListener(new InfiniteCardView.CardAnimationListener() {
 //            @Override
 //            public void onAnimationStart() {
@@ -90,10 +87,10 @@ public class FibActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (mIsFib1) {
-                    setStyle2();
+                    setStyle1();
                     mFibView.bringCardToFront(mFib1.getCount() - 1);
                 } else {
-                    setStyle1();
+                    setStyle2();
                     mFibView.bringCardToFront(mFib2.getCount() - 1);
                 }
             }
@@ -102,11 +99,14 @@ public class FibActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (mIsFib1) {
-                    setStyle2();
-                } else {
                     setStyle3();
+                } else {
+                    setStyle2();
                 }
                 mFibView.bringCardToFront(1);
+                findNext();
+
+
             }
         });
         findViewById(R.id.change).setOnClickListener(new View.OnClickListener() {
@@ -272,9 +272,10 @@ public class FibActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(URL... params) {
             HttpURLConnection conn = null;
-            String response = "";
+            String urlLink = "http://192.168.0.15:8000/fibcal/" + number1 +"/"+number2;
+            response = "";
             try {
-                URL url = new URL("http://192.168.0.15:8000/calculator/");
+                URL url = new URL(urlLink);
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
@@ -299,42 +300,22 @@ public class FibActivity extends AppCompatActivity {
     }
 
 
-    private class toPut extends AsyncTask<URL, Void, String>{
-
-
-        @Override
-        protected String doInBackground (URL...params){
-            HttpURLConnection conn = null;
-//            InputStreamReader input = null;
-        try {
-            URL url = new URL("http://192.168.0.15:8000/calculator/");
-            String param="number=" + URLEncoder.encode("100","UTF-8");
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
-            conn.setFixedLengthStreamingMode(param.getBytes().length);
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            PrintWriter out = new PrintWriter(conn.getOutputStream());
-            out.print(param);
-            out.close();
-            int responseCode = conn.getResponseCode();
-            System.out.println("Response Code : " + responseCode);
-
-            String response= "";
-
-            Scanner inStream = new Scanner(conn.getInputStream());
-
-            while(inStream.hasNextLine())
-                response+=(inStream.nextLine());
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            conn.disconnect();
+    private void findNext(){
+        number1 = number2;
+        number2 = response;
+        toGet text = new toGet();
+        text.execute();
+        if (currentIndex==5){
+            fibNumbers[0] = "test";
+            currentIndex = 1;
         }
-            return null;
-    }
+        else{
+            fibNumbers[currentIndex++] = "backEnd";
+        }
+        mFibView.setAdapter(mFib1);
+//        mFib1 = new MyFib(resId, fibNumbers, colors);
+//        mFib2 = new MyFib(resId, fibNumbers, colors);
+
     }
 
 
