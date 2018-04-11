@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().hide();
         number1 = (EditText) findViewById(R.id.number1);
         number2 = (EditText) findViewById(R.id.number2);
         configureGoButton();

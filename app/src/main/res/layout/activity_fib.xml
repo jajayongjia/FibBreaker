@@ -10,8 +10,9 @@
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@mipmap/background"
         infiniteCard:animDuration="1000"
-        infiniteCard:cardRatio="1"/>
+        infiniteCard:cardRatio="1" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -25,20 +26,21 @@
             style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="pre" />
-
-        <Button
-            android:id="@+id/change"
-            style="@style/Widget.AppCompat.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="change" />
+            android:fontFamily="casual"
+            android:text="pre"
+            android:background="#00f7fafb"
+            android:textColor="@color/colorAccent"
+            android:textSize="30sp" />
 
         <Button
             android:id="@+id/next"
             style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="next" />
+            android:fontFamily="casual"
+            android:text="next"
+            android:background="#00f7fafb"
+            android:textColor="@color/colorAccent"
+            android:textSize="30sp" />
     </LinearLayout>
 </FrameLayout>

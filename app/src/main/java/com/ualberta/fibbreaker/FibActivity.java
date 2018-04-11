@@ -25,8 +25,7 @@ import static android.graphics.Color.YELLOW;
 public class FibActivity extends AppCompatActivity {
     private InfiniteCardView mFibView;
     private BaseAdapter mFib1, mFib2;
-    private int[] resId = {R.mipmap.pic1, R.mipmap.pic2, R.mipmap.pic3, R.mipmap
-            .pic4, R.mipmap.pic5};
+    private int[] resId = {R.mipmap.back1, R.mipmap.back2, R.mipmap.back3};
     private String[] fibNumbers = {"0"};
     private int[] colors = {YELLOW};
     private String number1,number2,response,operator;
@@ -35,6 +34,7 @@ public class FibActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fib);
+        getSupportActionBar().hide();
         mFibView = findViewById(R.id.view);
         number1 = getIntent().getExtras().getString("INPUT1");
         number2 = getIntent().getExtras().getString("INPUT2");
@@ -105,8 +105,8 @@ public class FibActivity extends AppCompatActivity {
 
             fibNumberView = (TextView) convertView.findViewById(R.id.fibNumber);
             fibNumberView.setText(fibNumbers[0]);
-            convertView.setBackgroundColor(colors[0]);
-//            convertView.setBackgroundResource(resIds[position]);
+//            convertView.setBackgroundColor(colors[0]);
+            convertView.setBackgroundResource(resIds[1]);
             return convertView;
         }
     }

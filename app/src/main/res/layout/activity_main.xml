@@ -2,34 +2,42 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:infiniteCard="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frameLayout"
+    android:id="@+id/b"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@mipmap/background"
     android:orientation="vertical">
 
     <EditText
         android:id="@+id/number1"
+        style="@android:style/Widget.Material.Light.EditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="104dp"
+        android:layout_marginTop="64dp"
         android:ems="10"
+        android:fontFamily="casual"
+        android:hint="number1"
         android:inputType="number"
+        android:textColorHint="@android:color/holo_purple"
         infiniteCard:layout_constraintEnd_toEndOf="parent"
-        infiniteCard:layout_constraintHorizontal_bias="0.503"
         infiniteCard:layout_constraintStart_toStartOf="parent"
-        infiniteCard:layout_constraintTop_toTopOf="parent" />
+        infiniteCard:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <EditText
         android:id="@+id/number2"
+        style="@android:style/Widget.Material.Light.EditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="24dp"
         android:ems="10"
+        android:fontFamily="casual"
+        android:hint="number2"
         android:inputType="number"
+        android:textColorHint="@color/colorAccent"
         infiniteCard:layout_constraintEnd_toEndOf="parent"
         infiniteCard:layout_constraintHorizontal_bias="0.503"
         infiniteCard:layout_constraintStart_toStartOf="parent"
@@ -37,13 +45,35 @@
 
     <Button
         android:id="@+id/go"
+        style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="108dp"
+        android:layout_marginTop="72dp"
+        android:background="#00f7fafb"
+        android:fontFamily="casual"
         android:text="@string/go"
+        android:textColor="@color/colorAccent"
+        android:textSize="30sp"
         infiniteCard:layout_constraintEnd_toEndOf="parent"
         infiniteCard:layout_constraintStart_toStartOf="parent"
         infiniteCard:layout_constraintTop_toBottomOf="@+id/number2" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="266dp"
+        android:layout_height="87dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="96dp"
+        android:fontFamily="casual"
+        android:text="FibBreaker"
+        android:textColor="@color/colorAccent"
+        android:textSize="55sp"
+        infiniteCard:layout_constraintEnd_toEndOf="parent"
+        infiniteCard:layout_constraintHorizontal_bias="0.503"
+        infiniteCard:layout_constraintStart_toStartOf="parent"
+        infiniteCard:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>
