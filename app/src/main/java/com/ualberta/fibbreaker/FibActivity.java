@@ -46,7 +46,7 @@ public class FibActivity extends AppCompatActivity {
         text.execute();
         initButton();
     }
-
+   // init two buttons, pre button and next button
     private void initButton() {
         findViewById(R.id.pre).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,6 +69,7 @@ public class FibActivity extends AppCompatActivity {
         });
     }
 
+    // this is my Fibcard object,
     private static class MyFib extends BaseAdapter {
         private int[] resIds = {};
         private String[] fibNumbers = {};
@@ -111,6 +112,8 @@ public class FibActivity extends AppCompatActivity {
         }
     }
 
+
+    // AsyncTask object to get connection with Django REST API
     private class toGet extends AsyncTask<URL, Void, String> {
         @Override
         protected String doInBackground(URL... params) {
