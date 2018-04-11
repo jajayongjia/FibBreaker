@@ -1,3 +1,10 @@
+
+
+
+/*
+ * Copyright 2018 Yongjia Huang University Of Alberta. All Rights reserved
+ */
+
 package com.ualberta.fibbreaker;
 
 import android.content.Intent;

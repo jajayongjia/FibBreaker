@@ -1,3 +1,10 @@
+
+
+
+/*
+ * Copyright 2018 Yongjia Huang University Of Alberta. All Rights reserved
+ */
+
 package com.ualberta.fibbreaker;
 
 import android.os.AsyncTask;
@@ -46,7 +53,11 @@ public class FibActivity extends AppCompatActivity {
         text.execute();
         initButton();
     }
-   // init two buttons, pre button and next button
+
+    /**
+     * init two buttons, pre button and next button
+     * Whenever  a button is clicked, a request is send to the Django server by calling toGet() class
+     */
     private void initButton() {
         findViewById(R.id.pre).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,7 +80,11 @@ public class FibActivity extends AppCompatActivity {
         });
     }
 
-    // this is my Fibcard object,
+
+    /**
+     *  this is my Fibcard object,
+     *  this class contains all information that needs to display the view on screen.
+     */
     private static class MyFib extends BaseAdapter {
         private int[] resIds = {};
         private String[] fibNumbers = {};
@@ -113,7 +128,10 @@ public class FibActivity extends AppCompatActivity {
     }
 
 
-    // AsyncTask object to get connection with Django REST API
+    /**
+     *     AsyncTask object to get connection with Django REST API
+     *
+      */
     private class toGet extends AsyncTask<URL, Void, String> {
         @Override
         protected String doInBackground(URL... params) {
